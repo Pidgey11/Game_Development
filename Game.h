@@ -13,6 +13,6 @@ private:
 	void UpdateGame();
 	void GenerateOutput();
 	SDL_Window* mWindow;
-	bool mIsRunning;
+	bool mIsRunning = true;
 };
 
