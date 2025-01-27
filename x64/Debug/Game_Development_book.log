@@ -1,5 +1,3 @@
 ﻿  Game.cpp
-  Main.cpp
-  Generowanie kodu...
-C:\Users\Mateusz\source\repos\Game_Development_book\Game_Development_book\Game.cpp(25,1): warning C4715: "Game::Initialize”: niewszystkie ścieżki kodu zwracają wartość
+C:\Users\Mateusz\source\repos\Game_Development_book\Game_Development_book\Game.cpp(42,1): warning C4715: "Game::Initialize”: niewszystkie ścieżki kodu zwracają wartość
   Game_Development_book.vcxproj -> C:\Users\Mateusz\source\repos\Game_Development_book\x64\Debug\Game_Development_book.exe
