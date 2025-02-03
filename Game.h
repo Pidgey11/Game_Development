@@ -24,5 +24,8 @@ private:
 	SDL_Renderer* mRenderer;
 	Vector2 mPaddlePos;
 	Vector2 mBallPos;
+	Vector2 mBallVel;
+	Uint32 mTicksCount;		//Number of ticks since game start
+	int mPaddleDir;		//Direction of paddle
 };
 

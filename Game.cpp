@@ -39,6 +39,8 @@ bool Game::Initialize() {
 	mPaddlePos.y = 768.0f / 2.0f;
 	mBallPos.x = 1024.0f / 2.0f;
 	mBallPos.y = 768.0f / 2.0f;
+	mBallVel.x = -100.0f;
+	mBallVel.y = -120.0f;
 }
 
 void Game::Shutdown() {
@@ -49,6 +51,50 @@ void Game::Shutdown() {
 
 void Game::UpdateGame()
 {
+	// Wait until 16ms has elapsed since last frame
+	while (!SDL_TICKS_PASSED(SDL_GetTicks(), mTicksCount + 16))
+		;
+	
+	// Delta time is the difference in ticks from last frame
+	// (converted to seconds)
+	float deltaTime = (SDL_GetTicks() - mTicksCount) / 1000.0f;
+	
+	if (deltaTime > 0.05f)
+		deltaTime = 0.05f;
+	
+	// Update ticks count for next frame
+	mTicksCount = SDL_GetTicks();
+	
+
+	if (mPaddleDir != 0) {
+		mPaddlePos.y += mPaddleDir * 300.0f * deltaTime;
+		
+		// Make sure paddle doesnt move off the screen
+		if (mPaddlePos.y < (paddleH / 2.0f + thickness))
+			mPaddlePos.y = paddleH / 2.0f + thickness;
+		else if (mPaddlePos.y > (768.0f - paddleH / 2.0f - thickness))
+			mPaddlePos.y = 768.0f - paddleH / 2.0f - thickness;
+	}
+
+	mBallPos.x += mBallVel.x * deltaTime;
+	mBallPos.y += mBallVel.y * deltaTime;
+
+	if (mBallPos.y <= thickness && mBallVel.y < 0.0f) // Colision with top wall
+		mBallVel.y *= -1;
+	if(mBallPos.y >= (768.0f - thickness) && mBallVel.y > 0.0f) // Colision with bottom wall
+		mBallVel.y *= -1;
+
+	float diff = mPaddlePos.y - mBallPos.y;
+	diff = (diff > 0.0f) ? diff : -diff;
+	if (
+		// Our y-difference is small enough
+		diff <= paddleH / 2.0f &&
+		// Ball is at the correct x position
+		mBallPos.x <= 25.0f && mBallPos.x >= 20.0f &&
+		//The ball is moving to the left
+		mBallVel.x < 0.0f
+		)
+		mBallVel.x *= -1.0f;
 }
 void Game::ProcessInput() {
 	SDL_Event event;
@@ -62,6 +108,12 @@ void Game::ProcessInput() {
 	if (state[SDL_SCANCODE_ESCAPE]) {
 		mIsRunning = false;
 	}
+	
+	mPaddleDir = 0;
+	if (state[SDL_SCANCODE_W])
+		mPaddleDir -= 1; 
+	if (state[SDL_SCANCODE_S])
+		mPaddleDir += 1;
 }
 
 void Game::GenerateOutput() {
