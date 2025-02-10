@@ -1,5 +1,4 @@
-﻿  Game.cpp
-  Main.cpp
-  Generowanie kodu...
+﻿F:\Visual studio\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(531,5): warning MSB8028: Katalog pośredni (x64\Debug\) zawiera pliki udostępnione z innego projektu (Game_Development_book.vcxproj). Może to spowodować niepoprawne zachowanie podczas oczyszczania i ponownej kompilacji.
+  Game.cpp
 C:\Users\Mateusz\source\repos\Game_Development_book\Game_Development_book\Game.cpp(46,1): warning C4715: "Game::Initialize”: niewszystkie ścieżki kodu zwracają wartość
-  Game_Development_book.vcxproj -> C:\Users\Mateusz\source\repos\Game_Development_book\x64\Debug\Game_Development_book.exe
+  Game_Development_book.vcxproj -> C:\Users\Mateusz\source\repos\Game_Development_book\x64\Debug\Chapter_1.exe

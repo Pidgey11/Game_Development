@@ -37,11 +37,11 @@ bool Game::Initialize() {
 
 	mPaddlePos.x = 10.0f;
 	mPaddlePos.y = 768.0f / 2.0f;
-	mPaddle2Pos.x = 1024.0f - 20.0f;
+	mPaddle2Pos.x = 1000.0f;
 	mPaddle2Pos.y = 768.0f / 2.0f;
 	mBallPos.x = 1024.0f / 2.0f;
 	mBallPos.y = 768.0f / 2.0f;
-	mBallVel.x = -100.0f;
+	mBallVel.x = 100.0f;
 	mBallVel.y = -120.0f;
 }
 
@@ -100,18 +100,19 @@ void Game::UpdateGame()
 	float diff2 = mPaddle2Pos.y - mBallPos.y;
 	diff = (diff > 0.0f) ? diff : -diff;
 	diff2 = (diff2 > 0.0f) ? diff2 : -diff2;
-	if ((
+	if (
 		// Our y-difference is small enough
 		diff <= paddleH / 2.0f &&
 		// Ball is at the correct x position
 		mBallPos.x <= 25.0f && mBallPos.x >= 20.0f &&
 		//The ball is moving to the left
-		mBallVel.x < 0.0f) || 
-		(diff <= paddleH / 2.0f &&
-		mBallPos.x >= mPaddle2Pos.x - thickness && 
-		mBallVel.x > 0.0f
-		))
-		mBallVel.x *= -1.0f;
+		mBallVel.x < 0.0f)
+			mBallVel.x *= -1.0f;
+	else if(
+		diff2 <= paddleH / 2.0f &&
+		mBallPos.x <= 1000.0f && mBallPos.x >= 990.0f &&
+		mBallVel.x > 0.0f)
+			mBallVel.x *= -1.0f;
 
 	if (mBallPos.x < 10.0f || mBallPos.x > 1024)
 		GameFinished = true;

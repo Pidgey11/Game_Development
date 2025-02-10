@@ -29,5 +29,8 @@
     <ClInclude Include="Game.h">
       <Filter>Pliki źródłowe</Filter>
     </ClInclude>
+    <ClInclude Include="..\packages\sdl2.nuget.2.30.9\build\native\include\SDL.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
