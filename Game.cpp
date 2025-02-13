@@ -1,6 +1,6 @@
 #include "Game.h"
-const int thickness = 15;
-const float paddleH = 100.0f;
+#include <algorithm>
+#include "Actor.h"
 Game::Game(){}
 
 bool Game::Initialize() {
@@ -35,22 +35,26 @@ bool Game::Initialize() {
 		return false;
 	}
 
-	mPaddlePos.x = 10.0f;
-	mPaddlePos.y = 768.0f / 2.0f;
-	mPaddle2Pos.x = 1000.0f;
-	mPaddle2Pos.y = 768.0f / 2.0f;
-	mBallPos.x = 1024.0f / 2.0f;
-	mBallPos.y = 768.0f / 2.0f;
-	mBallVel.x = 100.0f;
-	mBallVel.y = -120.0f;
 }
 
 void Game::Shutdown() {
+
+	while (!mActors.empty()) {
+		delete mActors.back();
+	}
 	SDL_DestroyWindow(mWindow);
 	SDL_DestroyRenderer(mRenderer);
 	SDL_Quit();
 }
 
+void Game::AddActor(Actor* actor) {
+	if (mUpdatingActors) {
+		mPendingActors.emplace_back(actor);
+	}
+	else {
+		mActors.emplace_back(actor);
+	}
+}
 void Game::UpdateGame()
 {
 	// Wait until 16ms has elapsed since last frame
@@ -67,55 +71,34 @@ void Game::UpdateGame()
 	// Update ticks count for next frame
 	mTicksCount = SDL_GetTicks();
 	
+	//Update all actors
+	mUpdatingActors = true;
+	for (auto actor : mActors) {
+		actor->Update(deltaTime);
+	}
+	mUpdatingActors = false;
 
-	if (mPaddleDir != 0 ) {
-		mPaddlePos.y += mPaddleDir * 300.0f * deltaTime;
-		
-		// Make sure paddle doesnt move off the screen
-		if (mPaddlePos.y < (paddleH / 2.0f + thickness))
-			mPaddlePos.y = paddleH / 2.0f + thickness;
-		else if (mPaddlePos.y > (768.0f - paddleH / 2.0f - thickness))
-			mPaddlePos.y = 768.0f - paddleH / 2.0f - thickness;
+	//move any pending actors to mActors
+
+	for (auto pending : mPendingActors) {
+		mActors.emplace_back(pending);
+	}
+	mPendingActors.clear();
+
+	//Add any dead actors to a temp vector
+
+	std::vector<Actor*> deadActors;
+
+	for (auto actor : mActors) {
+		if (actor->GetState() == Actor::EDead) {
+			deadActors.emplace_back(actor);
+		}
 	}
 
-	if (mPaddle2Dir != 0) {
-		mPaddle2Pos.y += mPaddle2Dir * 300.0f * deltaTime;
-
-		// Make sure paddle doesnt move off the screen
-		if (mPaddle2Pos.y < (paddleH / 2.0f + thickness))
-			mPaddle2Pos.y = paddleH / 2.0f + thickness;
-		else if (mPaddle2Pos.y > (768.0f - paddleH / 2.0f - thickness))
-			mPaddle2Pos.y = 768.0f - paddleH / 2.0f - thickness;
+	//Delete dead actors
+	for (auto actor : deadActors) {
+		delete actor;
 	}
-
-	mBallPos.x += mBallVel.x * deltaTime;
-	mBallPos.y += mBallVel.y * deltaTime;
-
-	if (mBallPos.y <= thickness && mBallVel.y < 0.0f) // Colision with top wall
-		mBallVel.y *= -1;
-	if(mBallPos.y >= (768.0f - thickness) && mBallVel.y > 0.0f) // Colision with bottom wall
-		mBallVel.y *= -1;
-
-	float diff = mPaddlePos.y - mBallPos.y;
-	float diff2 = mPaddle2Pos.y - mBallPos.y;
-	diff = (diff > 0.0f) ? diff : -diff;
-	diff2 = (diff2 > 0.0f) ? diff2 : -diff2;
-	if (
-		// Our y-difference is small enough
-		diff <= paddleH / 2.0f &&
-		// Ball is at the correct x position
-		mBallPos.x <= 25.0f && mBallPos.x >= 20.0f &&
-		//The ball is moving to the left
-		mBallVel.x < 0.0f)
-			mBallVel.x *= -1.0f;
-	else if(
-		diff2 <= paddleH / 2.0f &&
-		mBallPos.x <= 1000.0f && mBallPos.x >= 990.0f &&
-		mBallVel.x > 0.0f)
-			mBallVel.x *= -1.0f;
-
-	if (mBallPos.x < 10.0f || mBallPos.x > 1024)
-		GameFinished = true;
 
 }
 void Game::ProcessInput() {
@@ -131,17 +114,6 @@ void Game::ProcessInput() {
 		mIsRunning = false;
 	}
 	
-	mPaddleDir = 0;
-	if (state[SDL_SCANCODE_W])
-		mPaddleDir -= 1; 
-	if (state[SDL_SCANCODE_S])
-		mPaddleDir += 1;
-
-	mPaddle2Dir = 0;
-	if (state[SDL_SCANCODE_I])
-		mPaddle2Dir -= 1;
-	if (state[SDL_SCANCODE_K])
-		mPaddle2Dir += 1;
 }
 
 void Game::GenerateOutput() {
@@ -152,54 +124,10 @@ void Game::GenerateOutput() {
 		255,	//B
 		255		//A
 	);
-	SDL_RenderClear(mRenderer);
-	SDL_SetRenderDrawColor(mRenderer, 255, 255, 255, 255); // Draw walls
-
-	SDL_Rect wall{
-		0,	//x
-		0,	//y
-		1024,	//width
-		thickness	//height
-	};
-	SDL_RenderFillRect(mRenderer, &wall);
 	
-	wall.y = 768 - thickness; // bottom wall
-	
-	SDL_RenderFillRect(mRenderer, &wall);
-	
-	wall.x = 1024 - thickness;
-	wall.y = 0;
-	wall.w = thickness;
-	wall.h = 1024; // Right wall
-	//SDL_RenderFillRect(mRenderer, &wall);
-
-	SDL_Rect paddle{
-		static_cast<int>(mPaddlePos.x),
-		static_cast<int>(mPaddlePos.y - paddleH / 2 ),
-		thickness,
-		static_cast<int>(paddleH)
-	};
-	SDL_RenderFillRect(mRenderer, &paddle);
-
-	SDL_Rect paddle2{
-		static_cast<int>(mPaddle2Pos.x),
-		static_cast<int>(mPaddle2Pos.y - paddleH / 2),
-		thickness,
-		static_cast<int>(paddleH)
-	};
-	SDL_RenderFillRect(mRenderer, &paddle2);
-	
-	SDL_Rect ball{
-		static_cast<int>(mBallPos.x - thickness /2 ),
-		static_cast<int>(mBallPos.y - thickness /2 ),
-		thickness,
-		thickness
-	};
-	SDL_RenderFillRect(mRenderer, &ball);
-	SDL_RenderPresent(mRenderer);
 }
 void Game::RunLoop() {
-	while (mIsRunning && !GameFinished){
+	while (mIsRunning){
 		ProcessInput();
 		UpdateGame();
 		GenerateOutput();

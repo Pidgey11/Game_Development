@@ -1,5 +1,6 @@
 #pragma once
 #include <SDL.h>
+#include <vector>
 
 struct Vector2
 {
@@ -15,6 +16,8 @@ public:
 	bool Initialize();
 	void RunLoop();
 	void Shutdown();
+	void AddActor(class Actor* actor);
+	void RemoveActor(class Actor* actor);
 private:
 	void ProcessInput();
 	void UpdateGame();
@@ -22,13 +25,12 @@ private:
 	SDL_Window* mWindow;
 	bool mIsRunning = true;
 	SDL_Renderer* mRenderer;
-	Vector2 mPaddlePos;
-	Vector2 mPaddle2Pos;
-	Vector2 mBallPos;
-	Vector2 mBallVel;
 	Uint32 mTicksCount;		//Number of ticks since game start
-	int mPaddleDir;		//Direction of paddle
-	int mPaddle2Dir;	//Second Paddle
+	// All the actors in the game
+	std::vector<class Actor*> mActors;
+	// Any pending actors
+	std::vector<class Actor*> mPendingActors;
+	bool mUpdatingActors;
 	bool GameFinished = false;
 };
 
