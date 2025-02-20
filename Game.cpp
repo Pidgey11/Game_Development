@@ -1,6 +1,8 @@
 #include "Game.h"
 #include <algorithm>
 #include "Actor.h"
+#include "SpriteComponent.h"
+
 Game::Game(){}
 
 bool Game::Initialize() {
@@ -34,7 +36,29 @@ bool Game::Initialize() {
 		SDL_Log("Failed to create renderer: %s", SDL_GetError());
 		return false;
 	}
-
+	IMG_Init(IMG_INIT_PNG);
+	SDL_Surface* IMG_Load(
+		const char* file // Image file name
+	);
+	SDL_Texture* SDL_CreateTextureFromSurface(
+		SDL_Renderer * renderer,
+		SDL_Surface * surface
+	);
+	SDL_Texture* LoadTexture(const char* fileName){
+		//Load from file
+		SDL_Surface* surf = IMG_Load(fileName);
+		if (!surf) {
+			SDL_Log("Failed to load texture file %s", fileName);
+			return nullptr;
+		}
+		SDL_Texture* text = SDL_CreateTextureFromSurface(mRenderer, surf);
+		SDL_FreeSurface(surf);
+		if (!text) {
+			SDL_Log("Failed to convert surface to texture for %s", fileName);
+			return nullptr;
+		}
+		return text;
+	}
 }
 
 void Game::Shutdown() {
@@ -54,6 +78,44 @@ void Game::AddActor(Actor* actor) {
 	else {
 		mActors.emplace_back(actor);
 	}
+}
+void Game::RemoveActor(Actor* actor)
+{
+	// Is it in pending actors?
+	auto iter = std::find(mPendingActors.begin(), mPendingActors.end(), actor);
+	if (iter != mPendingActors.end())
+	{
+		// Swap to end of vector and pop off (avoid erase copies)
+		std::iter_swap(iter, mPendingActors.end() - 1);
+		mPendingActors.pop_back();
+	}
+
+	// Is it in actors?
+	iter = std::find(mActors.begin(), mActors.end(), actor);
+	if (iter != mActors.end())
+	{
+		// Swap to end of vector and pop off (avoid erase copies)
+		std::iter_swap(iter, mActors.end() - 1);
+		mActors.pop_back();
+	}
+}
+
+void Game::AddSprite(SpriteComponent* sprite) {
+	int myDrawOrder = sprite->GetDrawOrder();
+	auto iter = mSprites.begin();
+	for (;
+		iter != mSprites.end();
+		++iter) {
+		if (myDrawOrder < (*iter)->GetDrawOrder()) {
+			break;
+		}
+	}
+	mSprites.insert(iter, sprite);
+}
+
+void SpriteComponent::SetTexture(SDL_Texture* texture) {
+	mTexture = texture;
+	SDL_QueryTexture(texture, nullptr, nullptr, &mTexWidth, &mTexHeight);
 }
 void Game::UpdateGame()
 {
@@ -124,6 +186,13 @@ void Game::GenerateOutput() {
 		255,	//B
 		255		//A
 	);
+	SDL_RenderClear(mRenderer);
+	for (auto sprite : mSprites)
+	{
+		sprite->Draw(mRenderer);
+	}
+
+	SDL_RenderPresent(mRenderer);
 	
 }
 void Game::RunLoop() {

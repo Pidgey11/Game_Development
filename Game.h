@@ -1,6 +1,7 @@
 #pragma once
 #include <SDL.h>
 #include <vector>
+#include "SDL_image.h"
 
 struct Vector2
 {
@@ -18,6 +19,8 @@ public:
 	void Shutdown();
 	void AddActor(class Actor* actor);
 	void RemoveActor(class Actor* actor);
+	void AddSprite(class SpriteComponent* sprite);
+	SDL_Texture* LoadTexture(const char* filename);
 private:
 	void ProcessInput();
 	void UpdateGame();
@@ -32,5 +35,6 @@ private:
 	std::vector<class Actor*> mPendingActors;
 	bool mUpdatingActors;
 	bool GameFinished = false;
+	std::vector<class SpriteComponent*> mSprites;
 };
 
