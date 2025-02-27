@@ -2,6 +2,8 @@
 #include <SDL.h>
 #include <vector>
 #include "SDL_image.h"
+#include <string>
+#include <unordered_map>
 
 struct Vector2
 {
@@ -21,6 +23,7 @@ public:
 	void RemoveActor(class Actor* actor);
 	void AddSprite(class SpriteComponent* sprite);
 	SDL_Texture* LoadTexture(const char* filename);
+	SDL_Texture* GetTexture(const std::string& fileName);
 private:
 	void ProcessInput();
 	void UpdateGame();
@@ -36,5 +39,6 @@ private:
 	bool mUpdatingActors;
 	bool GameFinished = false;
 	std::vector<class SpriteComponent*> mSprites;
+	std::unordered_map<std::string, SDL_Texture*> mTextures;
 };
 
