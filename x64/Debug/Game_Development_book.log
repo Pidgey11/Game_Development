@@ -1,4 +1,5 @@
 ﻿F:\Visual studio\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(531,5): warning MSB8028: Katalog pośredni (x64\Debug\) zawiera pliki udostępnione z innego projektu (Game_Development_book.vcxproj). Może to spowodować niepoprawne zachowanie podczas oczyszczania i ponownej kompilacji.
-  Game.cpp
-C:\Users\Mateusz\source\repos\Game_Development_book\Game_Development_book\Game.cpp(46,1): warning C4715: "Game::Initialize”: niewszystkie ścieżki kodu zwracają wartość
-  Game_Development_book.vcxproj -> C:\Users\Mateusz\source\repos\Game_Development_book\x64\Debug\Chapter_1.exe
+Game.obj : error LNK2019: nierozpoznany symbol zewnętrzny IMG_Init przywołany w funkcji "public: bool __cdecl Game::Initialize(void)" (?Initialize@Game@@QEAA_NXZ)
+Game.obj : error LNK2019: nierozpoznany symbol zewnętrzny IMG_Quit przywołany w funkcji "public: void __cdecl Game::Shutdown(void)" (?Shutdown@Game@@QEAAXXZ)
+Game.obj : error LNK2019: nierozpoznany symbol zewnętrzny IMG_Load przywołany w funkcji "public: struct SDL_Texture * __cdecl Game::GetTexture(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > const &)" (?GetTexture@Game@@QEAAPEAUSDL_Texture@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z)
+C:\Users\Mateusz\source\repos\Game_Development_book\x64\Debug\Chapter_1.exe : fatal error LNK1120: liczba nierozpoznanych elementów zewnętrznych: 3

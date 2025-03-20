@@ -1,10 +1,17 @@
+// ----------------------------------------------------------------
+// From Game Programming in C++ by Sanjay Madhav
+// Copyright (C) 2017 Sanjay Madhav. All rights reserved.
+// 
+// Released under the BSD License
+// See LICENSE in root directory for full details.
+// ----------------------------------------------------------------
 
 #pragma once
 #include "SpriteComponent.h"
 #include <vector>
 class AnimSpriteComponent : public SpriteComponent
 {
-public: 
+public:
 	AnimSpriteComponent(class Actor* owner, int drawOrder = 100);
 	// Update animation every frame (overridden from component)
 	void Update(float deltaTime) override;
