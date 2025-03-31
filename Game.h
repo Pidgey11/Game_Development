@@ -7,7 +7,7 @@
 // ----------------------------------------------------------------
 
 #pragma once
-#include "SDL.h"
+#include "SDL/SDL.h"
 #include <unordered_map>
 #include <string>
 #include <vector>
@@ -25,7 +25,7 @@ public:
 
 	void AddSprite(class SpriteComponent* sprite);
 	void RemoveSprite(class SpriteComponent* sprite);
-
+	
 	SDL_Texture* GetTexture(const std::string& fileName);
 private:
 	void ProcessInput();
@@ -33,7 +33,7 @@ private:
 	void GenerateOutput();
 	void LoadData();
 	void UnloadData();
-
+	
 	// Map of textures loaded
 	std::unordered_map<std::string, SDL_Texture*> mTextures;
 
