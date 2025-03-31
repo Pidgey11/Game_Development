@@ -13,6 +13,8 @@
 #include "SpriteComponent.h"
 #include "Ship.h"
 #include "BGSpriteComponent.h"
+#include "Random.h"
+#include "Asteroid.h"
 
 Game::Game()
 :mWindow(nullptr)
@@ -179,6 +181,11 @@ void Game::LoadData()
 	};
 	bg->SetBGTextures(bgtexs);
 	bg->SetScrollSpeed(-200.0f);
+
+	const int numAsteroids = 20;
+	for (int i = 0; i < numAsteroids; i++) {
+		new Asteroid(this);
+	}
 }
 
 void Game::UnloadData()
